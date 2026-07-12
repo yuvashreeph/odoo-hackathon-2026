@@ -14,6 +14,8 @@ from routes.auth import auth_bp
 from routes.dashboard import dashboard_bp
 from routes.driver import drivers_bp
 from routes.trip import trips_bp
+from routes.vehicle import vehicles_bp
+from routes.maintenance import maintenance_bp
 
 from utils.response import success, error
 
@@ -28,13 +30,13 @@ def create_app():
     CORS(app)
     JWTManager(app)
 
-    # -------------------------
     # Register API Blueprints
-    # -------------------------
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(drivers_bp)
     app.register_blueprint(trips_bp)
+    app.register_blueprint(vehicles_bp)
+    app.register_blueprint(maintenance_bp)
 
     # -------------------------
     # HTML Pages
@@ -47,24 +49,21 @@ def create_app():
     @app.route("/dashboard-page")
     def dashboard_page():
         return render_template("dashboard.html")
-    @app.route("/vehicles")
-    def vehicles():
-        return render_template("vehicles.html")
-
 
     @app.route("/drivers-page")
     def drivers_page():
         return render_template("drivers.html")
+
     @app.route("/trips-page")
     def trips_page():
         return render_template("trips.html")
 
+    @app.route("/vehicles-page")
+    def vehicles_page():
+        return render_template("vehicles.html")
 
-   
-
-
-    @app.route("/maintenance")
-    def maintenance():
+    @app.route("/maintenance-page")
+    def maintenance_page():
         return render_template("maintenance.html")
 
     # -------------------------
