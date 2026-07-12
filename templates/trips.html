@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block title %}Trips{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2>Trips</h2>
+
+    <table class="table table-bordered table-striped">
+
+        <thead class="table-dark">
+            <tr>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Driver ID</th>
+                <th>Vehicle ID</th>
+                <th>Cargo Weight</th>
+                <th>Planned Distance</th>
+                <th>Revenue</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody id="tripsTable">
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/trips.js') }}"></script>
+{% endblock %}
