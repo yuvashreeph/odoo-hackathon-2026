@@ -14,15 +14,22 @@ from database import mongo
 from routes.driver import drivers_bp
 from routes.trip import trips_bp
 from utils.response import success, error
-
+from flask_jwt_extended import JWTManager
+from routes.auth import auth_bp
+from routes.dashboard import dashboard_bp
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     CORS(app)
 
+    jwt = JWTManager(app)
+
     app.register_blueprint(drivers_bp)
     app.register_blueprint(trips_bp)
+    
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(dashboard_bp)
 
     @app.route("/health", methods=["GET"])
     def health():
