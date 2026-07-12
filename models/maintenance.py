@@ -1,30 +1,44 @@
 """
-Maintenance log document shape (Member 2 -- Vehicle & Maintenance).
-Provided as the shared schema contract; Member 2 owns CRUD logic in
-services/vehicle_service.py (or a dedicated maintenance service) and
-routes/maintenance.py.
+Maintenance model helpers (Member 2 — Fleet Manager module)
 
-Business rule: opening a maintenance log sets the linked vehicle's
-status to IN_SHOP; closing it (status -> COMPLETED) sets the vehicle
-back to AVAILABLE.
-
-{
-  "_id": ObjectId,
-  "vehicleId": ObjectId,
-  "maintenanceType": str,      # e.g. "Oil Change"
-  "cost": number,
-  "date": datetime,
-  "status": "ACTIVE" | "COMPLETED"
-}
+Collection: maintenance_logs
+Fields (team schema — README.md):
+    vehicleId          (ObjectId)
+    maintenanceType     (str)
+    cost                (number)
+    date                (str, e.g. "2026-07-12")
+    status              (str)  -> ACTIVE | COMPLETED
 """
-from datetime import datetime
+
+from utils.constants import MAINTENANCE_STATUS
+from utils.validators import serialize_document
+
+REQUIRED_FIELDS = ["vehicleId", "maintenanceType", "cost", "date"]
 
 
-def maintenance_document(vehicle_id, maintenance_type, cost, date=None, status="ACTIVE"):
+def build_maintenance_doc(data, vehicle_object_id):
     return {
-        "vehicleId": vehicle_id,
-        "maintenanceType": maintenance_type,
-        "cost": cost,
-        "date": date or datetime.utcnow(),
-        "status": status,
+        "vehicleId": vehicle_object_id,
+        "maintenanceType": str(data.get("maintenanceType", "")).strip(),
+        "cost": data.get("cost"),
+        "date": data.get("date"),
+        "status": MAINTENANCE_STATUS[0],  # "ACTIVE"
     }
+
+
+def validate_maintenance_payload(data):
+    errors = []
+    for field in REQUIRED_FIELDS:
+        if data.get(field) in (None, ""):
+            errors.append(f"'{field}' is required")
+
+    if data.get("cost") is not None:
+        if not isinstance(data["cost"], (int, float)) or data["cost"] < 0:
+            errors.append("'cost' must be a non-negative number")
+
+    return errors
+
+
+def serialize_maintenance(record):
+    """Convert a Mongo maintenance document into a JSON-safe dict."""
+    return serialize_document(record)

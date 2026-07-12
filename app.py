@@ -1,10 +1,10 @@
 """
 TransitOps — main entrypoint.
 
-Currently wires up only Member 3's blueprints (drivers, trips) so this
-module can be developed and demoed standalone. When the team merges,
-Member 1's app.py becomes the single source of truth — just make sure
-`drivers_bp` and `trips_bp` get registered there exactly as below.
+Wires up Member 3's blueprints (drivers, trips) and Member 2's
+blueprints (vehicles, maintenance). When the rest of the team merges
+in, Member 1's auth blueprint and Member 4's fuel/expense/dashboard
+blueprints get added here the same way.
 """
 from flask import Flask
 from flask_cors import CORS
@@ -13,6 +13,8 @@ from config import Config
 from database import mongo
 from routes.driver import drivers_bp
 from routes.trip import trips_bp
+from routes.vehicle import vehicles_bp
+from routes.maintenance import maintenance_bp
 from utils.response import success, error
 
 
@@ -23,6 +25,8 @@ def create_app():
 
     app.register_blueprint(drivers_bp)
     app.register_blueprint(trips_bp)
+    app.register_blueprint(vehicles_bp)
+    app.register_blueprint(maintenance_bp)
 
     @app.route("/health", methods=["GET"])
     def health():
