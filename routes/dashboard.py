@@ -1,27 +1,27 @@
-"""
-Member 4 -- Dashboard, Reports, Fuel & Expenses. Not part of Member 3's
-(Driver + Trip) submission -- stub only.
+from flask import Blueprint
+from flask_jwt_extended import jwt_required
 
-Reads only -- dashboard must never write to the database.
+from services.dashboard_service import get_dashboard
+from utils.response import success, error
 
-APIs to implement here:
-    GET /dashboard
-    GET /reports
-    GET /export/csv
+dashboard_bp = Blueprint("dashboard", __name__)
 
-Dashboard KPIs:
-    - Active Vehicles
-    - Available Vehicles
-    - Vehicles in Maintenance
-    - Active Trips
-    - Pending Trips
-    - Drivers On Duty
-    - Fleet Utilization %
 
-Reports:
-    - Fuel Efficiency
-    - Operational Cost
-    - Vehicle ROI
-    - Total Expenses
-    - Total Fuel Cost
-"""
+@dashboard_bp.route("/dashboard", methods=["GET"])
+@jwt_required()
+def dashboard():
+
+    try:
+        data = get_dashboard()
+
+        return success(
+            "Dashboard data fetched successfully",
+            data
+        )
+
+    except Exception as e:
+        return error(
+            "Failed to fetch dashboard",
+            [str(e)],
+            status_code=500
+        )

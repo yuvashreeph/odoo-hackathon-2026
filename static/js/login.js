@@ -1,36 +1,47 @@
-document.getElementById("loginForm").addEventListener("submit", async function(e){
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
 
     e.preventDefault();
 
-    const email=document.getElementById("email").value;
-    const password=document.getElementById("password").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-    const response=await fetch("/login",{
+    try {
 
-        method:"POST",
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        });
 
-        headers:{
-            "Content-Type":"application/json"
-        },
+        const result = await response.json();
 
-        body:JSON.stringify({
-            email,
-            password
-        })
+        if (response.ok) {
 
-    });
+            // Save JWT Token
+            localStorage.setItem("token", result.data.token);
 
-    const data=await response.json();
+            // Save User (Optional)
+            localStorage.setItem("user", JSON.stringify(result.data.user));
 
-    if(response.ok){
+            // Redirect to dashboard page
+            window.location.href = "/dashboard-page";
 
-        localStorage.setItem("token",data.token);
+        } else {
 
-        window.location="/dashboard";
+            alert(result.message);
 
-    }else{
+        }
 
-        alert(data.message);
+    } catch (err) {
+
+        alert("Unable to connect to server.");
+
+        console.log(err);
 
     }
 

@@ -14,6 +14,7 @@ from utils.response import success, error
 
 auth_bp = Blueprint("auth", __name__)
 
+
 @auth_bp.route("/login", methods=["POST"])
 def login_route():
 
@@ -26,9 +27,7 @@ def login_route():
     password = data.get("password")
 
     if not email or not password:
-        return error(
-            "Email and password are required"
-        )
+        return error("Email and password are required")
 
     result, err = login(email, password)
 
@@ -39,6 +38,7 @@ def login_route():
         "Login successful",
         result
     )
+
 
 @auth_bp.route("/profile", methods=["GET"])
 @jwt_required()
@@ -58,6 +58,8 @@ def profile():
         "Profile fetched successfully",
         profile
     )
+
+
 @auth_bp.route("/logout", methods=["POST"])
 @jwt_required()
 def logout_route():
