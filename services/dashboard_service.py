@@ -2,7 +2,8 @@
 Dashboard, Fuel & Expense business logic.
 Member 4
 """
-
+import csv
+import io
 from database.mongo import (
     fuel_logs_collection,
     expenses_collection,
@@ -424,3 +425,57 @@ def get_reports():
         )
 
     }
+
+
+
+def generate_csv():
+
+    output = io.StringIO()
+
+    writer = csv.writer(output)
+
+    writer.writerow([
+        "Vehicle ID",
+        "Trip ID",
+        "Fuel Liters",
+        "Fuel Cost",
+        "Expense Type",
+        "Expense Amount"
+    ])
+
+
+    fuel_logs = list(fuel_logs_collection.find())
+
+    expenses = list(expenses_collection.find())
+
+
+    max_rows = max(
+        len(fuel_logs),
+        len(expenses)
+    )
+
+
+    for i in range(max_rows):
+
+        fuel = fuel_logs[i] if i < len(fuel_logs) else {}
+
+        expense = expenses[i] if i < len(expenses) else {}
+
+
+        writer.writerow([
+
+            str(fuel.get("vehicleId", "")),
+
+            str(fuel.get("tripId", "")),
+
+            fuel.get("liters", ""),
+
+            fuel.get("cost", ""),
+
+            expense.get("expenseType", ""),
+
+            expense.get("amount", "")
+
+        ])
+
+    return output.getvalue()
