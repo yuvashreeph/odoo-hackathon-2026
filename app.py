@@ -13,6 +13,7 @@ from config import Config
 from database import mongo
 from routes.driver import drivers_bp
 from routes.trip import trips_bp
+from routes.reports import reports_bp
 from utils.response import success, error
 from routes.fuel import fuel_bp
 from routes.expense import expense_bp
@@ -29,6 +30,7 @@ def create_app():
     app.register_blueprint(fuel_bp)
     app.register_blueprint(expense_bp)
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(reports_bp)
 
     @app.route("/health", methods=["GET"])
     def health():
