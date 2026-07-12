@@ -1,0 +1,9 @@
+{
+  "source": "Chennai",
+  "destination": "Coimbatore",
+  "vehicleId": "REPLACE_WITH_VEHICLE_ID",
+  "driverId": "REPLACE_WITH_DRIVER_ID",
+  "cargoWeight": 450,
+  "plannedDistance": 500,
+  "revenue": 20000
+}
