@@ -13,8 +13,12 @@ from config import Config
 from database import mongo
 from routes.driver import drivers_bp
 from routes.trip import trips_bp
+from routes.reports import reports_bp
 from utils.response import success, error
-
+from routes.fuel import fuel_bp
+from routes.expense import expense_bp
+from routes.dashboard import dashboard_bp
+from routes.export import export_bp
 
 def create_app():
     app = Flask(__name__)
@@ -23,6 +27,11 @@ def create_app():
 
     app.register_blueprint(drivers_bp)
     app.register_blueprint(trips_bp)
+    app.register_blueprint(fuel_bp)
+    app.register_blueprint(expense_bp)
+    app.register_blueprint(dashboard_bp)
+    app.register_blueprint(reports_bp)
+    app.register_blueprint(export_bp)
 
     @app.route("/health", methods=["GET"])
     def health():
