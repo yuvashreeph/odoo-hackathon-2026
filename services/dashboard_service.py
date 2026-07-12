@@ -1,12 +1,65 @@
 """
-Member 4 -- Dashboard, Reports, Fuel & Expenses. Not part of Member 3's
-(Driver + Trip) submission -- stub only.
-
-Work to implement here:
-    - CRUD for fuel_logs_collection (models/fuel.py)
-    - CRUD for expenses_collection (models/expense.py)
-    - Aggregation queries across vehicles/drivers/trips/maintenance_logs
-      for dashboard KPIs (read-only -- never mutate state here)
-    - Report calculations: fuel efficiency, operational cost, vehicle ROI
-    - CSV export
+Fuel & Expense business logic.
+Member 4
 """
+
+from database.mongo import fuel_logs_collection, expenses_collection
+from models.fuel import fuel_log_document
+from models.expense import expense_document
+from utils.validators import (
+    to_object_id,
+    parse_date,
+    serialize_document,
+)
+
+
+# -----------------------------
+# Fuel CRUD
+# -----------------------------
+
+def list_fuel_logs():
+    docs = fuel_logs_collection.find().sort("date", -1)
+    return [serialize_document(doc) for doc in docs]
+
+
+def create_fuel_log(payload):
+    required = [
+        "vehicleId",
+        "tripId",
+        "liters",
+        "cost"
+    ]
+
+    missing = [field for field in required if not payload.get(field)]
+
+    if missing:
+        return None, [f"Missing field: {field}" for field in missing]
+
+    vehicle_id = to_object_id(payload["vehicleId"])
+    trip_id = to_object_id(payload["tripId"])
+
+    if vehicle_id is None:
+        return None, ["Invalid vehicleId"]
+
+    if trip_id is None:
+        return None, ["Invalid tripId"]
+
+    date = None
+    if payload.get("date"):
+        date = parse_date(payload["date"])
+        if date is None:
+            return None, ["date must be YYYY-MM-DD"]
+
+    doc = fuel_log_document(
+        vehicle_id=vehicle_id,
+        trip_id=trip_id,
+        liters=float(payload["liters"]),
+        cost=float(payload["cost"]),
+        date=date,
+    )
+
+    result = fuel_logs_collection.insert_one(doc)
+
+    doc["_id"] = result.inserted_id
+
+    return serialize_document(doc), None
